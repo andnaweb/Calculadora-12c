@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HP 12C Platinum - Funcional</title>
+    <style>
+        :root {
+            --case-bg: #2d2d2d;
+            --plate-gold: #b5a67c;
+            --display-bg: #9ead98;
+            --btn-black: #1a1a1a;
+            --btn-f: #f39c12;
+            --btn-g: #3498db;
+            --text-gold: #c5a059;
+            --text-blue: #87ceeb;
+        }
+
+        body { background-color: #121212; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Verdana', sans-serif; }
+
+        .hp12c { background-color: var(--case-bg); width: 580px; padding: 15px; border-radius: 8px; border: 2px solid #111; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+
+        .top-panel { background: linear-gradient(to bottom, #d1c4a3 0%, #b5a67c 100%); padding: 15px; border-radius: 4px; border: 2px solid #555; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        #display { background-color: var(--display-bg); width: 75%; height: 50px; border: 3px inset #7c8a77; display: flex; align-items: center; justify-content: flex-end; padding: 0 10px; font-family: 'Courier New', Courier, monospace; font-size: 32px; font-weight: bold; color: #222; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); overflow: hidden; }
+
+        .logo { font-weight: bold; font-style: italic; color: #333; text-align: right; line-height: 1; font-size: 14px; }
+
+        .keypad { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; }
+
+        .btn-container { display: flex; flex-direction: column; align-items: center; }
+
+        .label-f { color: var(--text-gold); font-size: 8px; height: 12px; font-weight: bold; }
+        .label-g { color: var(--text-blue); font-size: 8px; height: 12px; margin-top: 2px; }
+
+        .key { width: 48px; height: 34px; background-color: var(--btn-black); color: white; border: 1px solid #000; border-radius: 3px; font-size: 13px; cursor: pointer; box-shadow: 1px 2px 0 #000; display: flex; justify-content: center; align-items: center; outline: none; }
+        .key:active { transform: translate(1px, 1px); box-shadow: none; background-color: #333; }
+
+        .key-f { background-color: var(--btn-f); color: #000; }
+        .key-g { background-color: var(--btn-g); color: #fff; }
+        .key-enter { height: 84px; grid-row: span 2; }
+
+        @media (max-width: 600px) {
+            .hp12c { width: 98%; padding: 5px; }
+            .keypad { grid-template-columns: repeat(5, 1fr); gap: 5px; }
+            .key { width: 100%; }
+            .key-enter { height: 34px; grid-row: span 1; }
+            .top-panel { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hp12c">
+    <div class="top-panel">
+        <div id="display">0.00</div>
+        <div class="logo">hp 12c<br><small>platinum</small></div>
+    </div>
+
+    <div class="keypad">
+        <div class="btn-container"><span class="label-f">AMORT</span><button class="key">n</button><span class="label-g">12x</span></div>
+        <div class="btn-container"><span class="label-f">INT</span><button class="key">i</button><span class="label-g">12÷</span></div>
+        <div class="btn-container"><span class="label-f">NPV</span><button class="key">PV</button><span class="label-g">CFo</span></div>
+        <div class="btn-container"><span class="label-f">RND</span><button class="key">PMT</button><span class="label-g">CFj</span></div>
+        <div class="btn-container"><span class="label-f">IRR</span><button class="key">FV</button><span class="label-g">Nj</span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="chs()">CHS</button><span class="label-g">DATE</span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('7')">7</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('8')">8</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('9')">9</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="executeOp('/')">÷</button><span class="label-g"></span></div>
+
+        <div class="btn-container"><span class="label-f">PRICE</span><button class="key">y<sup>x</sup></button><span class="label-g">√x</span></div>
+        <div class="btn-container"><span class="label-f">YTM</span><button class="key">1/x</button><span class="label-g">e<sup>x</sup></span></div>
+        <div class="btn-container"><span class="label-f">SL</span><button class="key">%T</button><span class="label-g">LN</span></div>
+        <div class="btn-container"><span class="label-f">SOYD</span><button class="key">Δ%</button><span class="label-g">FRAC</span></div>
+        <div class="btn-container"><span class="label-f">DB</span><button class="key">%</button><span class="label-g">INTG</span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key">EEX</button><span class="label-g">ΔDYS</span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('4')">4</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('5')">5</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('6')">6</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="executeOp('*')">×</button><span class="label-g"></span></div>
+
+        <div class="btn-container"><span class="label-f">P/R</span><button class="key">R/S</button><span class="label-g">PSE</span></div>
+        <div class="btn-container"><span class="label-f">Σ</span><button class="key">SST</button><span class="label-g">BST</span></div>
+        <div class="btn-container"><span class="label-f">PRGM</span><button class="key">R↓</button><span class="label-g">GTO</span></div>
+        <div class="btn-container"><span class="label-f">FIN</span><button class="key">x≶y</button><span class="label-g">x≤y</span></div>
+        <div class="btn-container"><span class="label-f">REG</span><button class="key" onclick="clx()">CLx</button><span class="label-g">x=0</span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key key-enter" onclick="handleEnter()">ENTER</button><span class="label-g">LSTx</span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('1')">1</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('2')">2</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('3')">3</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="executeOp('-')">-</button><span class="label-g"></span></div>
+
+        <div class="btn-container"><span class="label-f"></span><button class="key">ON</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key key-f">f</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key key-g">g</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key">STO</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key">RCL</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('0')">0</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="pressNum('.')">.</button><span class="label-g"></span></div>
+        <div class="btn-container"><span class="label-f"></span><button class="key" onclick="executeOp('+')">+</button><span class="label-g"></span></div>
+    </div>
+</div>
+
+<script>
+    // Memória RPN (Stack)
+    let stack = [0, 0, 0, 0]; 
+    let displayValue = "0";
+    let isTyping = false;
+
+    const displayElement = document.getElementById('display');
+
+    function updateDisplay(val) {
+        // Se for número puro, limita casas decimais para parecer a real
+        if (!isNaN(val)) {
+            displayElement.innerText = Number(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        } else {
+            displayElement.innerText = val;
+        }
+    }
+
+    function pressNum(num) {
+        if (!isTyping) {
+            displayValue = num;
+            isTyping = true;
+        } else {
+            if (num === '.' && displayValue.includes('.')) return;
+            displayValue += num;
+        }
+        displayElement.innerText = displayValue;
+    }
+
+    function handleEnter() {
+        stack.unshift(parseFloat(displayValue));
+        stack.pop();
+        isTyping = false;
+        updateDisplay(stack[0]);
+    }
+
+    function executeOp(op) {
+        let x = parseFloat(displayValue);
+        let y = stack[0];
+
+        // Na HP 12C, se você digita "10 ENTER 5 +", o 10 sobe pro stack Y e o 5 é o X.
+        if (!isTyping) {
+            x = stack[0];
+            y = stack[1];
+            stack.splice(0, 1);
+        }
+
+        let result = 0;
+        switch(op) {
+            case '+': result = y + x; break;
+            case '-': result = y - x; break;
+            case '*': result = y * x; break;
+            case '/': result = y / x; break;
+        }
+
+        stack[0] = result;
+        displayValue = result.toString();
+        isTyping = false;
+        updateDisplay(result);
+    }
+
+    function clx() {
+        displayValue = "0";
+        isTyping = false;
+        updateDisplay(0);
+    }
+
+    function chs() {
+        displayValue = (parseFloat(displayValue) * -1).toString();
+        displayElement.innerText = displayValue;
+    }
+</script>
+
+</body>
+</html>
